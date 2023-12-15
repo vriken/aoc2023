@@ -36,3 +36,46 @@ def sum_part_numbers(schematic):
 sum_part_numbers(schematic)
 
 #525119
+
+#part 2
+
+with open(file_path, 'r') as file:
+    input_grid = [line.strip() for line in file.readlines()]
+
+def calculate_adjacent_values(input_grid):
+    rows = len(input_grid)
+    columns = len(input_grid[0])
+    total_product = 0
+    adjacent_values = [[] for _ in range(rows * columns)]
+    
+    for row_index in range(rows):
+        col_index = 0
+        while col_index < columns:
+            if not input_grid[row_index][col_index].isdigit():
+                col_index += 1
+                continue
+
+            end_index = col_index
+            number = 0
+            while end_index < columns and input_grid[row_index][end_index].isdigit():
+                number = 10 * number + (ord(input_grid[row_index][end_index]) - ord('0'))
+                end_index += 1
+
+            for adjacent_index in range(max(0, col_index - 1), min(columns, end_index + 1)):
+                if row_index - 1 >= 0 and input_grid[row_index - 1][adjacent_index] == '*':
+                    adjacent_values[(row_index - 1) * columns + adjacent_index].append(number)
+                if input_grid[row_index][adjacent_index] == '*':
+                    adjacent_values[row_index * columns + adjacent_index].append(number)
+                if row_index + 1 < rows and input_grid[row_index + 1][adjacent_index] == '*':
+                    adjacent_values[(row_index + 1) * columns + adjacent_index].append(number)
+            
+            col_index = end_index
+
+    for adj_values in adjacent_values:
+        if len(adj_values) == 2:
+            total_product += adj_values[0] * adj_values[1]
+
+    return total_product
+
+result = calculate_adjacent_values(input_grid)
+print(result)
